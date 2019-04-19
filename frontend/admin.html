@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" type="text/css" href="quiz.css">
+
+    <title>Document</title>
+</head>
+<body> 
+    <table class="admin-table" id="table">
+        <tr class="admin-table__header" id="table-header">
+            <th class="admin-table__heading">NAME</th>
+            <th class="admin-table__heading">EMAIL</th>
+
+            <th class="admin-table__heading">C</th>
+            <th class="admin-table__heading">C++</th>
+            <th class="admin-table__heading">JAVA</th>
+            <th class="admin-table__heading">COMMON</th>
+            <th class="admin-table__heading">DELETE</th>
+
+        </tr>
+       
+    </table>
+</body>
+<script>
+    if(document.cookie.slice(5,document.cookie.length) !== "admin"){
+        window.location.href = 'http://127.0.0.1:5500/frontend';
+    }
+    fetch("http://localhost:5000/api/get_all_users")
+    .then((res)=>res.json())
+    .then((data)=>{
+        var d1 = document.getElementById('table');
+        data.forEach((data)=>{
+            const {username,email,c,cpp,java,common } = data
+            d1.insertAdjacentHTML('beforeend', `
+            <tr class="admin-table__row" id=${username}>
+            <td class="admin-table__data">${username}</td>
+            <td class="admin-table__data">${email}</td>
+            <td class="admin-table__data">${c}</td>
+            <td class="admin-table__data">${cpp}</td>
+            <td class="admin-table__data">${java}</td>
+            <td class="admin-table__data">${common}</td>
+            <td class="admin-table__data delete-btn" onclick=deleteUser(${username})>DELETE</td>
+        </tr>
+            `);
+
+        })
+
+    })
+
+    const deleteUser = (userElement) =>{
+        console.log(event.target)
+        username = userElement.id
+        fetch("http://localhost:5000/api/delete_users/"+username,{
+            method: "DELETE", 
+        })
+        .then((res)=>res.json())
+        .then((res)=>{
+            userElement.remove();
+        })
+        .catch((err)=>{
+            console.log(err) 
+        })
+    }
+</script>
+</html>
